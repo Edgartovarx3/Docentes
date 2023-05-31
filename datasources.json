@@ -1,0 +1,23 @@
+{
+    "db": {
+      "name": "db",
+      "connector": "memory"
+    },
+    "myAPI": {
+      "name": "myAPI",
+      "connector": "rest",
+      "debug": false,
+      "operations": [
+        {
+          "template": {
+            "method": "GET",
+            "url": "http://localhost:5000/usuarios"
+          },
+          "functions": {
+            "consultaGeneral": []
+          }
+        }
+      ]
+    }
+  }
+  

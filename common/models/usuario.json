@@ -1,0 +1,39 @@
+{
+    "name": "Usuario",
+    "base": "PersistedModel",
+    "properties": {
+      "idUsuario": {
+        "type": "number",
+        "id": true,
+        "generated": true
+      },
+      "nombreUsuario": {
+        "type": "string"
+      },
+      "apellidoPaUsuario": {
+        "type": "string"
+      },
+      "apellidoMaUsuario": {
+        "type": "string"
+      },
+      "correoUsuario": {
+        "type": "string",
+        "required": true,
+        "index": true,
+        "unique": true
+      },
+      "passwordUsuario": {
+        "type": "string",
+        "required": true
+      },
+      "tipoUsuario": {
+        "type": "string",
+        "required": true
+      }
+    },
+    "validations": [],
+    "relations": {},
+    "acls": [],
+    "methods": {}
+  }
+  
