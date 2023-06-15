@@ -5,7 +5,6 @@ import NavegadorScreen from './src/components/Screens/NavegadorScreen';
 import ProfileScreen from './src/components/Screens/ProfileScreen';
 import TrayectoriaScreen from './src/components/Screens/TrayectoriaScreen';
 import DetallesTrayectoriaScreen from './src/components/Screens/DetallesTrayectoriaScreen';
-import Ejemplo from './src/ejemplo';
 import EliminarTrayectoriaScreen from './src/components/Screens/EliminarTrayectoriaScreen ';
 import PublicacionesScreen from './src/components/Screens/PublicacionesScreen';
 import HomeScreen from './src/components/Screens/HomeScreen';
