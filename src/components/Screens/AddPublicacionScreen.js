@@ -31,8 +31,6 @@ export default function AddPublicacionScreen({ navigation }) {
       // Mostrar una notificación de éxito
      
 
-      console.log('Respuesta fuera de la clase:', response);
-
     } catch (error) {
       // Mostrar una notificación de error
       Alert.alert('Error', 'Ha ocurrido un error al insertar los datos.'+ error);

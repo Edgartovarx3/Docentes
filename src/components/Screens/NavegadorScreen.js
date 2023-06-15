@@ -2,15 +2,20 @@ import {  View,ScrollView, Text,Image,Alert,TouchableOpacity } from "react-nativ
 import { Button } from "react-native-elements";
 import React, { useState,useEffect } from 'react';
 import { useRoute } from '@react-navigation/native';
-import { handleAuthError, obtenerTrabajosRealizados, obtenerTrayectoria } from "../../Metodos";
+import { handleAuthError, obtenerGradosAcademicos, obtenerTrabajosRealizados, obtenerTrayectoria } from "../../Metodos";
 import { Buffer } from 'buffer';
+import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
+
 
 
 
  function NavegadorScreen({ navigation }) {
+const rutaFotoGuardadas = FileSystem.documentDirectory + 'foto.jpg';
  const imageUrl='https://i.pinimg.com/736x/3f/66/85/3f6685138ab5143add56e03925b4e5a1.jpg'
  const [MostrarTrayectoria, SetMostrarTrayectorias] = useState(false);
  const [MostrarPerfil, SetMostrarPerfil] = useState(false);
+ const [MostrarGrados, SetMostrarGrados] = useState(false);
  const [MostrarTrabajos, SetMostrarTrabajos] = useState(false);
  const items = [];
  const route = useRoute();
@@ -18,18 +23,38 @@ import { Buffer } from 'buffer';
  const credentials = Buffer.from(`${Datos.usuario.correoUsuario}:${Datos.usuario.passwordUsuario}`).toString('base64');
  const [trayectoria, setTrayectoria] = useState([]);
  const [Trabajos, setTrabajos] = useState([]);
+ const [rutaFotoGuardada, setRutaFotoGuardada] = useState(null);
+ const [updateFoto, setUpdateFoto] = useState(false);
+ const[GradosAcademicos,setGradosAcademicos]=useState([])
 
+const inicio=async () =>{
+SetMostrarGrados(false)
+SetMostrarPerfil(true)
+SetMostrarTrabajos(false)
+SetMostrarTrayectorias(false)
+}
+
+useEffect(() => {
+  inicio();
+
+},[])
  useEffect(() => {
   if (Datos.usuario.tipoUsuario === 'D') {
+    
     // Llama a la función por primera vez al cargar el componente
     obtenerDatos();
     obtenerTrabajos();
+    obtenerGrados();
+   
 
     const interval = setInterval(() => {
-      if (MostrarTrayectoria && !MostrarTrabajos) {
+      if (MostrarTrayectoria) {
         obtenerDatos();
-      } else if (MostrarTrabajos &&!MostrarTrayectoria) {
+      } else if (MostrarTrabajos) {
         obtenerTrabajos();
+      }
+      else if(MostrarGrados){
+        obtenerGrados();
       }
     }, 5000);
 
@@ -38,7 +63,7 @@ import { Buffer } from 'buffer';
   } else if (Datos.usuario.tipoUsuario === 'A') {
     obtenerDatos();
   }
-}, []);
+}, [MostrarTrayectoria, MostrarPerfil, MostrarTrabajos, MostrarGrados]);
 
 
 const obtenerDatos = async () => {
@@ -52,10 +77,6 @@ const obtenerDatos = async () => {
   }
 };
 
-
-
-
-
 const obtenerTrabajos = async () => {
   try {
     const datos = await obtenerTrabajosRealizados(credentials);
@@ -67,12 +88,98 @@ const obtenerTrabajos = async () => {
   }
 };
 
+const obtenerGrados=async()=>{
+  try{
+    const Grados=await obtenerGradosAcademicos(credentials);
+    setGradosAcademicos(Grados)
+    //Alert.alert("Asies",Grados.opciones[0].Titulo)
+    
+  }catch(error){
+   Alert.alert("Error",error )
+    
+  }
+};
+
+
+useEffect(() => {
+  obtenerFoto();
+}, [rutaFotoGuardadas]);
+
+const obtenerFoto = async () => {
+  const fileName = 'foto.jpg';
+  const destinationUri = `${FileSystem.documentDirectory}${fileName}`;
+  const fileInfo = await FileSystem.getInfoAsync(destinationUri);
+  if (fileInfo.exists) {
+    setRutaFotoGuardada(fileInfo.uri);
+    console.log(rutaFotoGuardadas);
+  } else {
+    setRutaFotoGuardada(null);
+  }
+};
+const eliminarFoto = async (data) => {
+  try {
+    // Verificar si la foto existe antes de eliminarla
+    const fileInfo = await FileSystem.getInfoAsync(data);
+    if (fileInfo.exists) {
+      await FileSystem.deleteAsync(data);
+      console.log("Foto eliminada con éxito "+data);
+     
+      // Actualizar la ruta de la foto guardada a null
+      return setRutaFotoGuardada(null);
+    } else {
+      console.log("La foto no existe");
+      return "";
+    }
+   
+  } catch (error) {
+    console.log("Error al eliminar la foto:", error);
+  }
+};
+
+
+const saveImageToLocalDirectory = async (uri) => {
+ 
+  try {
+    
+   
+    const fileName = 'foto.jpg';
+    const destinationUri = `${FileSystem.documentDirectory}${fileName}`;
+    eliminarFoto(destinationUri);
+    await FileSystem.copyAsync({ from: uri, to: destinationUri });
+    Alert.alert('Éxito', 'La imagen se ha guardado en el directorio local.');
+    setRutaFotoGuardada(destinationUri);
+  } catch (error) {
+    Alert.alert('Error', 'No se pudo guardar la imagen en el directorio local.');
+  }
+};
+
+const handleImagePick = async () => {
+  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+  try {
+    if (status !== 'granted') {
+      throw new Error('Permiso denegado para acceder a la biblioteca de medios.');
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync();
+     console.log(result)
+    if (!result.canceled) {
+      if (result.assets && result.assets.length > 0) {
+
+        const selectedImageUri = result.assets[0].uri;
+        await saveImageToLocalDirectory(selectedImageUri);
+      }
+    }
+  } catch (error) {
+    Alert.alert('Error', error.message);
+  }
+};
 
 
 
 
  useEffect(() => {
-    // Llama a la función obtenerDatosActualizados cada 5 segundos (5000 ms)
+    // Llama a la función obtenerDatosActualizados cada 1 segundos (1000 ms)
     const interval = setInterval(renderItems, 5000);
   
     // Limpia el intervalo cuando el componente se desmonta o cambia
@@ -80,8 +187,7 @@ const obtenerTrabajos = async () => {
   }, []);
  
  const renderItems = () => {
-    const 
-    items = [];
+  
         
    
       const docente = {
@@ -91,10 +197,8 @@ const obtenerTrabajos = async () => {
         correo: Datos.usuario.correoUsuario,
         tipoUsuario:Datos.usuario.tipoUsuario
       }; 
-      
-    
    
-        if(MostrarTrayectoria && !MostrarPerfil && !MostrarTrabajos){
+         if(MostrarTrayectoria){
           if(Datos.usuario.tipoUsuario=='A'){
             items.push(
               <>
@@ -130,13 +234,21 @@ const obtenerTrabajos = async () => {
               
             );
           }
+          if(trayectoria.opciones.length==0){
+            items.push(
+              <>
+              <Text style={styles.vacio}>No existen trayectorias</Text>
+              </>
+              );
+          }
 
          
         }catch(error){
           handleAuthError(error);
         }
         }
-        else if(!MostrarTrayectoria&& MostrarPerfil && !MostrarTrabajos){
+         if(MostrarPerfil){
+        
             items.push(<>
             <Text style={styles.title}>Datos de perfil</Text>
            
@@ -148,7 +260,8 @@ const obtenerTrabajos = async () => {
             </>);
 
         }
-        if(MostrarTrabajos){
+         if(MostrarTrabajos){
+         
           if(Datos.usuario.tipoUsuario=='A'){
             items.push(
               <>
@@ -170,7 +283,7 @@ const obtenerTrabajos = async () => {
                 {Trabajos.Trabajos[i].id && (
                   <Button
                     title="Más"
-                    onPress={() => {SetMostrarTrabajos(false);
+                    onPress={() => {
                       navigation.navigate('Trabajo Realizado', {
                         Datos: Datos,
                         idTrabajos: Trabajos.Trabajos[i].id,
@@ -183,14 +296,69 @@ const obtenerTrabajos = async () => {
             
               
             );
+          }   
+          if(Trabajos.Trabajos.length==0){
+            items.push(
+              <>
+              <Text style={styles.vacio}>No existen Trabajos</Text>
+              </>
+              );
           }
-         
-
-         
         }catch(error){
           handleAuthError(error);
         }
-        };
+        }
+        if(MostrarGrados){
+         
+          if(Datos.usuario.tipoUsuario=='A'){
+            items.push(
+              <>
+              <Text>Un administrador no tiene Trabajos realizados weon!</Text>
+              
+              </>
+              
+                
+              );
+            
+          }
+          try{
+          for (let i = 0; i < GradosAcademicos.opciones.length; i++) {
+           
+            items.push(
+              <>
+              <View style={styles.card}>
+                <Text style={styles.title}>{GradosAcademicos.opciones[i].Titulo}</Text>
+                
+                {GradosAcademicos.opciones[i].id && (
+                  <Button
+                    title="Más"
+                    onPress={() => {
+                      navigation.navigate('Ver Grado', {
+                        Datos: Datos, idGrado: GradosAcademicos.opciones[i].id
+                        //idTrabajos: Trabajos.Trabajos[i].id,
+                      });}
+                    }
+                  />
+                )}
+              </View>
+            </>
+            
+              
+            );
+          }   
+          if(GradosAcademicos.opciones.length==0){
+            items.push(
+              <>
+              <Text style={styles.vacio}>No existen grados Academicos</Text>
+              </>
+              );
+          }
+        }catch(error){
+          handleAuthError(error);
+        }
+        
+        }
+       
         
     
 
@@ -198,41 +366,54 @@ const obtenerTrabajos = async () => {
     return items;
   };
 
-
-
-  
   return (
     <View style={styles.transparente}>
      <View style={styles.container}>
           <View style={styles.foto}>
-        <Image
-        source={{ uri: imageUrl }}
-        style={styles.image}
-      />
+         
+          <TouchableOpacity onPress={handleImagePick}>
+      {!rutaFotoGuardada ? (
+        <Image source={{ uri: imageUrl }} style={styles.image} />
+      ) : (
+        <Image source={{ uri: rutaFotoGuardadas }} style={styles.image} />
+      )}
+    </TouchableOpacity>
+   
         </View>
         
         <View style={styles.mover}>
           <Button title={Datos.usuario.tipoUsuario==='D'?'Informacion Docente':Datos.usuario.tipoUsuario==='A'?'Informacion Administrador':<></> }
-          onPress={() => { SetMostrarPerfil(true);
-           if (MostrarTrayectoria || MostrarTrabajos) {
+          onPress={() => { 
+              SetMostrarPerfil(true);
               SetMostrarTrayectorias(false);
               SetMostrarTrabajos(false);
-              }}}
+              SetMostrarGrados(false)
+              }}
               titleStyle={styles.buttonText} 
               buttonStyle={styles.button} />
     
           <Button title="Trayectoria Profesional" 
-          onPress={() => { SetMostrarTrayectorias(true);
-           if (MostrarPerfil|| MostrarTrabajos) {
+          onPress={() => { 
+              SetMostrarTrayectorias(true);
               SetMostrarPerfil(false);
               SetMostrarTrabajos(false);
-              }}} titleStyle={styles.buttonText} buttonStyle={styles.button}/>
+              SetMostrarGrados(false);
+              }} titleStyle={styles.buttonText} buttonStyle={styles.button}/>
     
-          <Button title="Grados Academicos" onPress={() => navigation.navigate("Materia")} titleStyle={styles.buttonText}buttonStyle={styles.button} />
+          <Button title="Grados Academicos" 
+           onPress={() => {
+               SetMostrarGrados(true);
+               SetMostrarPerfil(false);
+               SetMostrarTrabajos(false);
+               SetMostrarTrayectorias(false);
+               }} titleStyle={styles.buttonText} buttonStyle={styles.button}/>
         
           <Button title="Trabajos Realizados" 
-          onPress={() => { SetMostrarPerfil(false);
-            SetMostrarTrayectorias(false); SetMostrarTrabajos(true);
+          onPress={() => { 
+            SetMostrarTrabajos(true); 
+            SetMostrarPerfil(false);
+            SetMostrarTrayectorias(false); 
+            SetMostrarGrados(false);
           }} titleStyle={styles.buttonText} buttonStyle={styles.button}/>
 
         </View>
@@ -241,6 +422,7 @@ const obtenerTrabajos = async () => {
         {MostrarTrayectoria ?  renderItems() :<></>}
         {MostrarPerfil ?  renderItems() :<></>}
         {MostrarTrabajos ?  renderItems() :<></>}
+        {MostrarGrados ?  renderItems() :<></>}
         
            
         </ScrollView>
@@ -264,10 +446,22 @@ const obtenerTrabajos = async () => {
 
 {MostrarTrabajos ? (
       <>
-        <TouchableOpacity style={styles.separator} onPress={() => navigation.navigate("Eliminar Trayectoria", { Datos: Datos })}>
+        <TouchableOpacity style={styles.separator} onPress={() => navigation.navigate("Eliminar Trabajos Realizados", { Datos: Datos })}>
           <Text style={styles.buttonText}>Eliminar</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.separator} onPress={() => navigation.navigate("Agregar Trabajo Realizado", { Datos: Datos })}>
+          <Text style={styles.buttonText}>Añadir</Text>
+        </TouchableOpacity>
+      </>
+    ) : (
+      <></>
+    )}
+  {MostrarGrados ? (
+      <>
+        <TouchableOpacity style={styles.separator} onPress={() => navigation.navigate("Eliminar Grados Academicos", { Datos: Datos })}>
+          <Text style={styles.buttonText}>Eliminar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.separator} onPress={() => navigation.navigate("Agregar Grado Academico", { Datos: Datos })}>
           <Text style={styles.buttonText}>Añadir</Text>
         </TouchableOpacity>
       </>
@@ -294,6 +488,9 @@ const obtenerTrabajos = async () => {
 const styles ={
   mover:{
     top:30,
+  },
+  vacio:{
+    color:"gray",
   },
   card: {
     backgroundColor: '#FFFFFF',

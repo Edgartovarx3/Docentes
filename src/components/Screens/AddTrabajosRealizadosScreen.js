@@ -26,17 +26,8 @@ export default function AddTrabajosRealizadosScreen({ navigation }) {
         titulo: title
       };
       const response = await InsertarTrabajosRealizados(credentials, datos);
-
-      // Limpiar los campos del formulario
-      setTitle('');
-      setDescription('');
-      
-      // Mostrar una notificación de éxito
       Alert.alert( response.estatus, response.mensaje );
-
-
     } catch (error) {
-      // Mostrar una notificación de error
       Alert.alert('Error', 'Ha ocurrido un error al insertar los datos.'+ error);
     }
   };
@@ -46,23 +37,20 @@ export default function AddTrabajosRealizadosScreen({ navigation }) {
       .validate({ title, description }, { abortEarly: false })
       .then(() => {
         setErrors(null);
-        // Aquí se podría enviar los datos del formulario a un servidor o guardarlos en un almacenamiento local
+        handleSubmit();
       })
       .catch((err) => {
-        setErrors(validationErrors);
+       
+       
         validationErrors = {}; 
         err.inner.forEach((error) => {
           validationErrors[error.path] = error.message;
+          setErrors(validationErrors);
         });
        
       });
   };
 
-  const handleVisualize = () => {
-    navigation.navigate(
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Visualizacion Trabajos')}></TouchableOpacity>
-    );
-  };
 
   return (
     <View style={styles.container}>
@@ -85,15 +73,15 @@ export default function AddTrabajosRealizadosScreen({ navigation }) {
         numberOfLines={4}
       />
       {errors?.description && <Text style={styles.error}>{errors.description}</Text>}
-      <TouchableOpacity style={styles.button} onPress={()=> {handleSave();  handleSubmit();}}>
+      <TouchableOpacity style={styles.button} onPress={()=> {handleSave(); navigation.goBack()}}>
         <Text style={styles.buttonText}>Guardar</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handleVisualize}>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate(' Visualizacion Trabajos')}>
-  <Text style={styles.buttonText}>Ver los trabajos</Text>
+      
+      <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
+  <Text style={styles.buttonText}>Cancelar</Text>
 </TouchableOpacity>
 
-      </TouchableOpacity>
+     
     </View>
   );
 }

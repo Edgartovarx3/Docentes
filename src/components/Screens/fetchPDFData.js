@@ -1,18 +1,32 @@
 
-import { obtenerDocumento } from '../../Metodos';
+import {eliminarDocumentos , obtenerDocumento } from '../../Metodos';
 import { Buffer } from 'buffer';
 import { useRoute } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import  React,{  useState,useEffect } from 'react';
-import { StyleSheet, SafeAreaView, Button } from 'react-native';
+import { StyleSheet, SafeAreaView, Text,TouchableOpacity,Alert } from 'react-native';
 import Pdf from 'react-native-pdf';
 
-const FetchPDFData = () => {
+const FetchPDFData = ({navigation}) => {
   const route = useRoute();
   const { Datos, Trabajo } = route.params;
   const credentials = Buffer.from(`${Datos.usuario.correoUsuario}:${Datos.usuario.passwordUsuario}`).toString('base64');
-  const onlineSource = { uri: "http://samples.leanpub.com/thereactnativebook-sample.pdf", cache: true };
-  const [pdfSource, setPdfSource] = useState(onlineSource);
+   const [pdfSource, setPdfSource] = useState(null);
+ 
+
+   
+
+   const EliminarDoc = async () => {
+    try {
+      const Doc = await eliminarDocumentos(Trabajo,credentials);
+      Alert.alert("Estatus",Doc.mensaje);
+      navigation.goBack()
+    } catch (error) {
+      
+     handleAuthError(error)
+     
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,9 +49,18 @@ const FetchPDFData = () => {
     fetchData();
   }, []);
 
+ 
+
   return (
     <SafeAreaView style={styles.container}>
+     {pdfSource ?  <TouchableOpacity onPress={() => EliminarDoc()}>
+            <Text >Eliminar pdf</Text>
+          </TouchableOpacity>:<></>}
+      
+      {pdfSource ? 
       <Pdf
+        trustAllCerts={false}
+       
         source={pdfSource}
         onLoadComplete={(numberOfPages, filePath) => {
           console.log(`Number of pages: ${numberOfPages}`);
@@ -53,10 +76,12 @@ const FetchPDFData = () => {
         }}
         style={styles.pdf}
       />
+      :<Text>No se Encontro un  Archivo PDF</Text>}
       <StatusBar style="auto" />
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

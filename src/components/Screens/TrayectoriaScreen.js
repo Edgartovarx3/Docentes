@@ -1,10 +1,10 @@
 import {React,useState }from "react";
-import { Button, View,Text, TextInput,StyleSheet,Alert,TouchableOpacity } from "react-native";
+import { Button, View,ScrollView, Text, TextInput,StyleSheet,Alert,TouchableOpacity } from "react-native";
 import { insertarTrayectoriaProfesional } from "../../Metodos";
 import { Buffer } from 'buffer';
 import { useRoute } from '@react-navigation/native';
 
-export default function TrayectoriaScreen( ) {
+export default function TrayectoriaScreen({navigation}) {
   const route = useRoute();
  
   const { Datos} = route.params;
@@ -21,28 +21,18 @@ export default function TrayectoriaScreen( ) {
           tipoParticipacion: tipo,
           tituloParticipacion: titulo
         };
-        const response = await insertarTrayectoriaProfesional(credentials, datos);
-
-        // Limpiar los campos del formulario
-        setTitulo('');
-        setTipo('');
-        setDescripcion('');
-  
-        // Mostrar una notificación de éxito
+        await insertarTrayectoriaProfesional(credentials, datos);
        
-  
-        console.log('Respuesta fuera de la clase:', response);
   
       } catch (error) {
         // Mostrar una notificación de error
-        Alert.alert('Error', 'Ha ocurrido un error al insertar los datos.'+ error);
       }
     };
   //metodo agregar
   
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
     <TextInput
       style={styles.input}
       placeholder="Título de trayectoria"
@@ -63,15 +53,16 @@ export default function TrayectoriaScreen( ) {
       multiline
     />
     <View style={styles.buttonContainer}>
-    <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-  <Text style={styles.buttonText}>Agregar</Text>
-</TouchableOpacity>
+   
 
 <TouchableOpacity style={styles.button} onPress={() => {}}>
-  <Text style={styles.buttonText}>Borrar</Text>
+  <Text style={styles.buttonText}>Cancelar</Text>
+</TouchableOpacity>
+<TouchableOpacity style={styles.button} onPress={()=>{handleSubmit();  navigation.goBack();}}>
+  <Text style={styles.buttonText}>Agregar</Text>
 </TouchableOpacity>
     </View>
-  </View>
+  </ScrollView>
   );
 }
 const styles = StyleSheet.create({

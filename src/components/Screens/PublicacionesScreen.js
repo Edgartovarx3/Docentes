@@ -45,7 +45,14 @@ const PublicacionesScreen = ({ navigation }) => {
       setSelectedItems([...selectedItems, id]);
     }
   };
-
+  cancelarbutton = () =>
+  Alert.alert('Eliminar', '¿Estas seguro de que deseas eliminar?', [
+    {
+      text: 'No',
+      onPress: () => console.log('Cancel Pressed')
+    },
+    {text: 'Si', onPress: () =>{ handleEliminar()}},
+  ]); 
   const handleEliminar = () => {
     // Realizar la lógica de eliminación aquí
     if (selectedItems.length > 0) {
@@ -59,6 +66,8 @@ const PublicacionesScreen = ({ navigation }) => {
                 
                
             }
+
+            
            
         }
      
@@ -91,17 +100,21 @@ const PublicacionesScreen = ({ navigation }) => {
           <TouchableOpacity onPress={() => abrirEnlace(opcion.linkPublicaciones) }>
             <Text style={styles.link}>{opcion.linkPublicaciones}</Text>
           </TouchableOpacity>
-          
-          
         </View>
       ))
     ) : (
-      <Text>Cargando publicacines...</Text>
+      <Text>Cargando publicaciones...</Text>
     )}
+    {Publicaciones.Usuarios ? Publicaciones.Usuarios.length==0?<Text>No hay ni vergas</Text>:<></>:<></>}
     <Text></Text>
+    
     <Text></Text>
   <Text></Text>
+  
   </ScrollView>
+  <View>
+  
+  </View>
   <View style={styles.separator}>
   <View>
   <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Agregar Publicacion",{ Datos:Datos})}>
@@ -111,7 +124,7 @@ const PublicacionesScreen = ({ navigation }) => {
   <Text>      </Text>
  
   <View >
-  <TouchableOpacity style={styles.button} onPress={handleEliminar}>
+  <TouchableOpacity style={styles.button} onPress={cancelarbutton}>
     <Text style={styles.buttonText}>Eliminar</Text>
   </TouchableOpacity>
   </View>

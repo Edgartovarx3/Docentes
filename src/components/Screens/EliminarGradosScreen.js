@@ -1,24 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, Switch, Alert, ScrollView,StyleSheet,TouchableOpacity } from 'react-native';
-import { eliminarTrayectoriaProfesional, obtenerTrayectoria } from '../../Metodos';
+import { eliminarGradosAcademicos, eliminarTrayectoriaProfesional, obtenerGradosAcademicos, obtenerTrayectoria } from '../../Metodos';
 import { useRoute } from '@react-navigation/native';
 import { Buffer } from 'buffer';
 
-const EliminarTrayectoriaScreen = () => {
+const EliminarGradosScreen = ({navigation}) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const route = useRoute();
   const { Datos } = route.params;
   const credentials = Buffer.from(`${Datos.usuario.correoUsuario}:${Datos.usuario.passwordUsuario}`).toString('base64');
-  const [trayectoria, setTrayectoria] = useState([]);
+  const [grados, setGrados] = useState([]);
 
   useEffect(() => {
     obtenerDatos();
   }, []);
 
+  cancelarbutton = () =>
+    Alert.alert('Cancelar', '¿Estas seguro de que quieres eliminar?', [
+      {
+        text: 'No',
+        onPress: () => console.log('Cancel Pressed')
+      },
+      {text: 'Si', onPress: () => {handleEliminar(); navigation.goBack()}},
+    ]);
   const obtenerDatos = async () => {
     try {
-      const datos = await obtenerTrayectoria(credentials);
-      setTrayectoria(datos);
+      const datos = await obtenerGradosAcademicos(credentials);
+      setGrados(datos);
     } catch (error) {
       // Maneja el error
       console.log(error);
@@ -49,12 +57,12 @@ const EliminarTrayectoriaScreen = () => {
     // Realizar la lógica de eliminación aquí
     if (selectedItems.length > 0) {
         if(selectedItems>=1){
-            eliminarTrayectoriaProfesional(credentials,selectedItems)
+            eliminarGradosAcademicos(credentials,selectedItems)
            
         }else{
             for( i=0; i< selectedItems.length; i++){
               
-                eliminarTrayectoriaProfesional(credentials,selectedItems[i])
+                eliminarGradosAcademicos(credentials,selectedItems[i])
                 
                
             }
@@ -74,23 +82,23 @@ const EliminarTrayectoriaScreen = () => {
     <View>
     <View style={styles.boxContainer}>
   <ScrollView style={styles.Scroll}>
-    {trayectoria.opciones ? (
-      trayectoria.opciones.map((opcion) => (
-        <View key={opcion.idTrayectoria} style={styles.card}>
+    {grados.opciones ? (
+      grados.opciones.map((opcion) => (
+        <View key={opcion.id} style={styles.card}>
           <Switch
-            value={selectedItems.includes(opcion.idTrayectoria)}
-            onValueChange={() => handleSwitchToggle(opcion.idTrayectoria)}
+            value={selectedItems.includes(opcion.id)}
+            onValueChange={() => handleSwitchToggle(opcion.id)}
           />
-          <Text style={styles.title}>Información de trayectoría</Text>
-          <Text style={styles.subtitle}>{opcion.tituloParticipacion}</Text>
+          <Text style={styles.title}>{opcion.Titulo}</Text>
+          <Text style={styles.subtitle}>{opcion.Tipo}</Text>
           <Text style={styles.Descripcion}>{opcion.Descripcion}</Text>
         </View>
       ))
     ) : (
-      <Text>Cargando trayectoría...</Text>
+      <Text>Cargando Grados Academicos...</Text>
     )}
   </ScrollView>
-  <TouchableOpacity style={styles.button} onPress={handleEliminar}>
+  <TouchableOpacity style={styles.button} onPress={cancelarbutton}>
     <Text style={styles.buttonText}>Eliminar</Text>
   </TouchableOpacity>
 </View>
@@ -126,7 +134,7 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: 'bold',
       marginBottom: 5,
-      color: 'gray',
+      color: 'red',
     },
     Descripcion:{
         top:-40,
@@ -148,4 +156,4 @@ const styles = StyleSheet.create({
     },
   });
   
-export default EliminarTrayectoriaScreen;
+export default EliminarGradosScreen;

@@ -15,6 +15,15 @@ import AddPublicacionScreen from './src/components/Screens/AddPublicacionScreen'
 import AddTrabajosRealizadosScreen from './src/components/Screens/AddTrabajosRealizadosScreen';
 import AddDocumentoScreen from './src/components/Screens/AddDocumentoScreen';
 import fetchPDFData from './src/components/Screens/fetchPDFData';
+import VerGradosAcademicosScreen from './src/components/Screens/VerGradosAcademicosScreen';
+import AddGradosAdemicosScreen from './src/components/Screens/AddGradosAdemicosScreen';
+import EliminarGradosScreen from './src/components/Screens/EliminarGradosScreen';
+import EliminarTrabajosScreen from './src/components/Screens/EliminarTrabajosScreen';
+import AddDocenteScreen from './src/components/Functions/Admin/AddDocenteScreen';
+import DocentesScreen from './src/components/Screens/DocentesScreen';
+import LoginScreen from './src/LoginScreen';
+
+
 
 
 
@@ -24,7 +33,7 @@ function App() {
   return (
       <NavigationContainer>
         <Stack.Navigator>
-        <Stack.Screen name=" login" component= {Ejemplo}/> 
+        <Stack.Screen name="Login" component= {LoginScreen}/> 
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Menu" component= {NavegadorScreen}/>
         <Stack.Screen name="Editar Perfil" component= {ProfileScreen}/>
@@ -39,8 +48,15 @@ function App() {
         <Stack.Screen name="Agregar Tema" component= {AddTemainteresScreen}/>
         <Stack.Screen name="Subir Documento" component= {AddDocumentoScreen}/>
         <Stack.Screen name="Visualizador" component= {fetchPDFData}/>
+        <Stack.Screen name="Ver Grado" component= {VerGradosAcademicosScreen}/>
+        <Stack.Screen name="Agregar Grado Academico" component= {AddGradosAdemicosScreen}/>
+        <Stack.Screen name="Eliminar Grados Academicos" component= {EliminarGradosScreen}/>
+        <Stack.Screen name="Eliminar Trabajos Realizados" component= {EliminarTrabajosScreen}/>
+        <Stack.Screen name="Agregar Docentes" component= {AddDocenteScreen}/>
+        <Stack.Screen name="Lista de Docentes" component= {DocentesScreen}/>
         
-       
+        
+
         
         </Stack.Navigator>
       </NavigationContainer>

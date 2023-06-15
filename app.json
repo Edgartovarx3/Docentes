@@ -3,15 +3,18 @@
     "name": "Docentes",
     "slug": "Docentes",
     "version": "1.0.0",
-    "permissions": [
-      "expo-linking"
-    ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "plugins": [
       "@config-plugins/react-native-blob-util",
-      "@config-plugins/react-native-pdf"
+      "@config-plugins/react-native-pdf",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
     ],
     "splash": {
       "image": "./assets/splash.png",
@@ -22,7 +25,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.edgarga.Docentes"
     },
     "android": {
       "adaptiveIcon": {
@@ -34,7 +38,8 @@
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION",
         "android.permission.ACCESS_NETWORK_STATE"
-      ]
+      ],
+      "package": "com.edgarga.Docentes"
     },
     "web": {
       "favicon": "./assets/favicon.png"

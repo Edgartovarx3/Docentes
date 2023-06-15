@@ -5,11 +5,6 @@ import { Buffer } from 'buffer';
 import { ScrollView } from 'react-native-gesture-handler';
 
 
-
-
-
-
-
 const LoginScreen = ({navigation}) => {
 
     
@@ -18,7 +13,7 @@ const LoginScreen = ({navigation}) => {
   const [Datos, setDatos] = useState([]);
   const [token,setToken]=useState();
 
-  const API_URL = 'http://192.168.0.13:5000/consultarUsuario';
+  const API_URL = 'http://192.168.137.30:5000/consultarUsuario';
  
   const handleLogin = async () => {
     try {

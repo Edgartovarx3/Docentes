@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Alert } from "react-native";
 
 
-const API_URL = 'http://192.168.0.13:5000/';
+const API_URL = 'http://192.168.137.30:5000/';
 
 export const obtenerTrayectoria = async (token) => {
     
@@ -39,12 +39,10 @@ export const insertarTrayectoriaProfesional = async (token,trayectoriaProfesiona
               Authorization: `Basic ${token}`,
             },
           });
-          Alert.alert("Exito", response.data.mensaje);
-      return response.data;
+          Alert.alert("estatus", response.data.mensaje);
     } catch (error) {
       // Maneja el error aquí
-      console.log('Error al insertar trayectoria profesional:', error);
-      throw error;
+      
     }
   };
 export const eliminarTrayectoriaProfesional = async (token, idTrayectoria) => {
@@ -54,7 +52,7 @@ export const eliminarTrayectoriaProfesional = async (token, idTrayectoria) => {
           Authorization: `Basic ${token}`,
         },
       });
-      console.log('Trayectoria profesional eliminada:', response.data);
+      Alert.alert("Estatus",response.data.mensaje)
       return response.data;
     } catch (error) {
       // Maneja el error aquí
@@ -62,6 +60,20 @@ export const eliminarTrayectoriaProfesional = async (token, idTrayectoria) => {
       throw error;
     }
   };
+export const EditarTrayectoria = async (token,TrayectoriaData, idTrayectoria) => {
+    
+    try {
+        const response = await axios.put(API_URL+'/trayectorias/'+idTrayectoria, TrayectoriaData, {
+            headers: {
+              Authorization: `Basic ${token}`,
+            },
+          });
+      return response.data;
+      
+    } catch (error) {
+     handleAuthError(error)
+    }
+};
 
 
  export const handleAuthError = (error) => {
@@ -117,7 +129,7 @@ export const eliminarTrayectoriaProfesional = async (token, idTrayectoria) => {
           Authorization: `Basic ${token}`,
         },
       });
-      console.log('Tema de interes eliminado:', response.data);
+     Alert.alert('Estatus', response.data.mensaje);
       return response.data;
     } catch (error) {
       // Maneja el error aquí
@@ -148,7 +160,7 @@ export const eliminarTrayectoriaProfesional = async (token, idTrayectoria) => {
               Authorization: `Basic ${token}`,
             },
           });
-          Alert.alert("Exito", response.data.mensaje);
+          Alert.alert("Estatus", response.data.mensaje);
       return response.data;
     } catch (error) {
       // Maneja el error aquí
@@ -163,7 +175,7 @@ export const eliminarTrayectoriaProfesional = async (token, idTrayectoria) => {
           Authorization: `Basic ${token}`,
         },
       });
-      console.log('Trayectoria profesional eliminada:', response.data);
+      Alert.alert('Estatus', response.data.mensaje);
       return response.data;
     } catch (error) {
       // Maneja el error aquí
@@ -215,6 +227,35 @@ export const eliminarTrayectoriaProfesional = async (token, idTrayectoria) => {
       throw error;
     }
   };
+  export const eliminarTrabajosRealizados = async (token, idTrabajo) => {
+    try {
+      const response = await axios.delete(API_URL+'/TrabajosRealizados/'+idTrabajo, {
+        headers: {
+          Authorization: `Basic ${token}`,
+        },
+      });
+      Alert.alert('Estatus', response.data.mensaje);
+      return response.data;
+    } catch (error) {
+      // Maneja el error aquí
+     handleAuthError(error)
+      throw error;
+    }
+  };
+  export const EditarTrabajosRealizados = async (token,idTrabajo,TrabajoData)=>{
+    try{
+      const response = await axios.put(API_URL+"TrabajosRealizados/"+idTrabajo,TrabajoData,  {
+        headers: {
+          Authorization: `Basic ${token}`,
+        },
+      });
+      Alert.alert('Estatus',response.data.mensaje)
+
+    }catch(error){
+      handleAuthError(error)
+
+    }
+  }
 
   export const InsertarDocumento = async (nombreDocumento, archivo, fk_id_trabajos_realizados,token) => {
    
@@ -233,16 +274,16 @@ export const eliminarTrayectoriaProfesional = async (token, idTrayectoria) => {
           Authorization: `Basic ${token}`,
         },
       });
-      Alert.alert("ok", response.data.mensaje)
+      Alert.alert("Estatus", response.data.mensaje)
       return response.data;
     } catch (error) {
+      Alert.alert("error", response.data.mensaje)
        handleAuthError(error);
     }
   };
-
   export const obtenerDocumento = async (trabajoid, token) => {
     try {
-        const response = await axios.get(`http://192.168.0.13:5000/documentos/${trabajoid}`, {
+        const response = await axios.get(API_URL+`documentos/${trabajoid}`, {
         headers: {
           Authorization: `Basic ${token}`,
         },
@@ -254,6 +295,112 @@ export const eliminarTrayectoriaProfesional = async (token, idTrayectoria) => {
       handleAuthError(error);
     }
   };
+  export const eliminarDocumentos = async (trabajoId,token) => {
+    try {
+      const response = await axios.delete(API_URL+"/documento/"+trabajoId,{
+        headers: {
+          Authorization: `Basic ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error('Error al eliminar los documentos'+error);
+    }
+  };
+
+  
+  export const obtenerGradosAcademicos= async (token) => {
+    
+    try {
+        const response = await axios.get(API_URL+'GradosAcademicos', {
+            headers: {
+              Authorization: `Basic ${token}`,
+            },
+          });
+      return response.data;
+    } catch (error) {
+      handleAuthError(error)
+      throw error;
+    }
+  };
+  export const obtenerGradosAcademicosIndividual = async (token,idGrado) => {
+    
+    try {
+        const response = await axios.get(API_URL+'/GradosAcademicos/'+idGrado, {
+            headers: {
+              Authorization: `Basic ${token}`,
+            },
+          });
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+  export const InsertarGradosAcademicos = async (token,Grado) => {
+    try {
+        const response = await axios.post(API_URL+'GradosAcademicos',Grado, {
+            headers: {
+              Authorization: `Basic ${token}`,
+            },
+          });
+         // Alert.alert("ok", response.data.mensaje);
+      return response.data;
+    } catch (error) {
+      // Maneja el error aquí
+     handleAuthError(error);
+      throw error;
+    }
+  };
+  export const eliminarGradosAcademicos = async (token, idGrado) => {
+    try {
+      const response = await axios.delete(API_URL+'GradosAcademicos/'+idGrado, {
+        headers: {
+          Authorization: `Basic ${token}`,
+        },
+      });
+      Alert.alert('Estatus', response.data.mensaje);
+      return response.data;
+    } catch (error) {
+      // Maneja el error aquí
+     handleAuthError(error)
+      throw error;
+    }
+  };
+  export const obtenerDocentes= async (token) => {
+    
+    try {
+        const response = await axios.get(API_URL+'usuarios', {
+            headers: {
+              Authorization: `Basic ${token}`,
+            },
+          });
+      return response.data;
+    } catch (error) {
+      handleAuthError(error)
+      throw error;
+    }
+  };
+  export const InsertarDocentes = async (token,Docente) => {
+    try {
+        const response = await axios.post(API_URL+'agregarUsuario',Docente, {
+            headers: {
+              Authorization: `Basic ${token}`,
+            },
+          });
+          Alert.alert("ok", response.data.mensaje);
+      return response.data.mensaje;
+    } catch (error) {
+      // Maneja el error aquí
+     handleAuthError(error);
+      throw error;
+    }
+  };
+
+
+  
+
+  
   
   
   

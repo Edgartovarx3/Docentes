@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, View, Text, StyleSheet } from "react-native";
+import { Button, View, Text, StyleSheet,Alert } from "react-native";
 import { Stack, IconButton } from "@react-native-material/core";
 import { useRoute } from '@react-navigation/native';
 import { Buffer } from 'buffer';
@@ -8,67 +8,75 @@ import { Buffer } from 'buffer';
 
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
+
 export default function HomeScreen({ navigation }) {
   const route = useRoute();
  const { Datos } = route.params;
 
+ 
  return (
   <View style={styles.container}>
-    <View >
-      <View style={styles.buttonContainer}>
-      <IconButton 
-        icon={(props) => (
-          <Icon
-            name="account"
-            size={30}
-            {...props}
-          />
-        )}
-        onPress={() => navigation.navigate("Menu", { Datos: Datos })}
-        
-      />
-       <Text style={styles.buttonText}>Perfil</Text></View>
-      
-       <View style={styles.buttonContainer}>
-      <IconButton 
-        icon={(props) => <Icon name="clock" {...props} />}
-       
-      /> 
-      <Text style={styles.buttonText}>Horario</Text>
-      
-       </View>
-      
-    </View>
-    <View >
-    <View style={styles.buttonContainer} >
-      <IconButton 
-        icon={(props) => (
-          <Icon
-            name="account-search"
-            {...props}
-          />
-        )}
-        onPress={()=> navigation.navigate("Temas de Interes",{ Datos:Datos})}
-       
-      />
-        <Text style={styles.buttonText}>Temas de interes</Text>
-      </View>
+    {Datos.usuario.tipoUsuario==="D" ? 
+    <><View>
+         <View style={styles.buttonContainer}>
+           <IconButton
+             icon={(props) => (
+               <Icon
+                 name="account"
+                 size={30}
+                 {...props} />
+             )}
+             onPress={() => navigation.navigate("Menu", { Datos: Datos })} />
+           <Text style={styles.buttonText}>Perfil</Text></View>
+
+         <View style={styles.buttonContainer}>
+           <IconButton
+             icon={(props) => <Icon name="clock" {...props} />}
+             onPress={() => Alert.alert("Atención", "Apartado en construcción")} />
+           <Text style={styles.buttonText}>Horario</Text>
+
+         </View>
+
+       </View><View>
+           <View style={styles.buttonContainer}>
+             <IconButton
+               icon={(props) => (
+                 <Icon
+                   name="account-search"
+                   {...props} />
+               )}
+               onPress={() => navigation.navigate("Temas de Interes", { Datos: Datos })} />
+             <Text style={styles.buttonText}>Temas de interes</Text>
+           </View>
 
 
-       <View style={styles.buttonContainer}>
-      <IconButton 
-        icon={(props) => (
-          <Icon
-            name="publish"
-            {...props}
-          />
-        )}
-        onPress={() => navigation.navigate("Publicaciones",{ Datos:Datos})}
-       
+           <View style={styles.buttonContainer}>
+             <IconButton
+               icon={(props) => (
+                 <Icon
+                   name="publish"
+                   {...props} />
+               )}
+               onPress={() => navigation.navigate("Publicaciones", { Datos: Datos })} />
+             <Text style={styles.buttonText}>Publicaciones</Text>
+           </View>
+         </View></>
+:
+<View>
+  <View style={styles.buttonContainer}>
+  <IconButton 
+    icon={(props) => (
+      <Icon
+        name="account"
+        size={30}
+        {...props}
       />
-        <Text style={styles.buttonText}>Publicaciones</Text>
-      </View>
-    </View>
+    )}
+    onPress={() => navigation.navigate("Lista de Docentes", { Datos: Datos })}
+    
+  />
+   <Text style={styles.buttonText}>Ver Docentes</Text></View>
+</View>}
   </View>
 );
 };
