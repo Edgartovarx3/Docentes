@@ -16,6 +16,15 @@ export default function TemainteresVITScreen({ navigation }) {
     obtenerDatos();
   }, []);
 
+  cancelarbutton = () =>
+    Alert.alert('Eliminar', '¿Estas seguro de que deseas eliminar?', [
+      {
+        text: 'No',
+        onPress: () => console.log('Cancel Pressed')
+      },
+      {text: 'Si', onPress: () =>{ handleEliminar()}},
+    ]); 
+
   const obtenerDatos = async () => {
     try {
       const datos = await obtenerTemasInteres(credentials);
@@ -50,17 +59,19 @@ export default function TemainteresVITScreen({ navigation }) {
     // Realizar la lógica de eliminación aquí
     if (selectedItems.length > 0) {
         if(selectedItems>=1){
-            eliminarTemasInteres(credentials,selectedItems)
+         eliminarTemasInteres(credentials,selectedItems)
            
         }else{
             for( i=0; i< selectedItems.length; i++){
               
-                eliminarTrayectoriaProfesional(credentials,selectedItems[i])
+              eliminarTemasInteres(credentials,selectedItems[i])
                 
                
             }
            
         }
+
+
      
      
       // Reiniciar la lista de elementos seleccionados
@@ -90,6 +101,7 @@ export default function TemainteresVITScreen({ navigation }) {
       <Text>Cargando Temas de interes...</Text>
     )}
   </ScrollView>
+  {TemaInteres.TemasInteres ? TemaInteres.TemasIntereszx.length==0?<Text>No hay ni vergas</Text>:<></>:<></>}
   <View style={styles.container}>
   <View>
   <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Agregar Tema",{ Datos:Datos})}>
@@ -98,7 +110,7 @@ export default function TemainteresVITScreen({ navigation }) {
   </View>
   <Text>      </Text>
   <View>
-  <TouchableOpacity style={styles.button} onPress={handleEliminar}>
+  <TouchableOpacity style={styles.button} onPress={cancelarbutton}>
     <Text style={styles.buttonText}>Eliminar</Text>
   </TouchableOpacity>
 </View>
